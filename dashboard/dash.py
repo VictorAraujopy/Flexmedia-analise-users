@@ -98,7 +98,7 @@ if dfa is not None:
             margin=dict(t=20, b=20, l=20, r=20),  # Margens zeradas/pequenas para centralizar
             
             
-            # Se ainda parecer torto, ajuste levemente o 'y' (ex: 0.51 ou 0.49)
+
             annotations=[
                 dict(
                     text=str(total_usuarios), 

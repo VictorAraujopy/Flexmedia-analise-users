@@ -1,31 +1,101 @@
-tempo_interacao,teve_duvida,tipo_clique_encoded,classificacao_real,classificacao_ia,tipo_clique
-70,0,1,interação longa e inútil,interação longa e inútil,B
-277,0,2,interação longa e inútil,interação longa e inútil,C
-89,0,1,interação longa e inútil,interação longa e inútil,B
-189,1,0,interação longa e útil,interação longa e útil,A
-8,0,2,interação rápida e inútil,interação rápida e inútil,C
-285,1,2,interação longa e útil,interação longa e útil,C
-213,1,1,interação longa e útil,interação longa e útil,B
-252,0,0,interação longa e inútil,interação longa e inútil,A
-228,1,0,interação longa e útil,interação longa e útil,A
-240,0,2,interação longa e inútil,interação longa e inútil,C
-281,0,2,interação longa e inútil,interação longa e inútil,C
-26,1,2,interação moderada e útil,interação moderada e útil,C
-42,0,1,interação rápida e inútil,interação rápida e inútil,B
-79,1,1,interação longa e útil,interação longa e útil,B
-274,1,2,interação longa e útil,interação longa e útil,C
-93,1,1,interação longa e útil,interação longa e útil,B
-66,1,1,interação longa e útil,interação longa e útil,B
-235,0,0,interação longa e inútil,interação longa e inútil,A
-74,0,0,interação longa e inútil,interação longa e inútil,A
-229,1,1,interação longa e útil,interação longa e útil,B
-230,0,2,interação longa e inútil,interação longa e inútil,C
-286,1,1,interação longa e útil,interação longa e útil,B
-149,1,2,interação longa e útil,interação longa e útil,C
-201,1,0,interação longa e útil,interação longa e útil,A
-282,1,1,interação longa e útil,interação longa e útil,B
-21,1,1,interação moderada e útil,interação moderada e útil,B
-36,1,2,interação moderada e útil,interação moderada e útil,C
-188,0,1,interação longa e inútil,interação longa e inútil,B
-39,1,0,interação moderada e útil,interação moderada e útil,A
-257,1,2,interação longa e útil,interação longa e útil,C
+tempo_interacao,teve_duvida,classificacao_ia
+240,0,interação longa e inútil
+280,1,interação longa e útil
+94,1,interação longa e útil
+143,1,interação longa e útil
+93,1,interação longa e útil
+100,1,interação longa e útil
+67,1,interação longa e útil
+146,1,interação longa e útil
+229,0,interação longa e inútil
+39,1,interação moderada e útil
+228,1,interação longa e útil
+268,0,interação longa e inútil
+74,0,interação longa e inútil
+65,0,interação longa e inútil
+261,0,interação longa e inútil
+21,1,interação moderada e útil
+296,0,interação longa e inútil
+246,1,interação longa e útil
+281,0,interação longa e inútil
+299,1,interação longa e útil
+296,1,interação longa e útil
+248,0,interação longa e inútil
+213,1,interação longa e útil
+290,1,interação longa e útil
+213,0,interação longa e inútil
+217,1,interação longa e útil
+149,1,interação longa e útil
+120,1,interação longa e útil
+212,0,interação longa e inútil
+251,0,interação longa e inútil
+26,1,interação moderada e útil
+229,1,interação longa e útil
+150,1,interação longa e útil
+79,1,interação longa e útil
+128,0,interação longa e inútil
+83,0,interação longa e inútil
+96,0,interação longa e inútil
+295,1,interação longa e útil
+247,1,interação longa e útil
+285,1,interação longa e útil
+36,1,interação moderada e útil
+264,0,interação longa e inútil
+201,1,interação longa e útil
+148,0,interação longa e inútil
+8,0,interação rápida e inútil
+189,1,interação longa e útil
+149,1,interação longa e útil
+121,0,interação longa e inútil
+99,0,interação longa e inútil
+201,1,interação longa e útil
+213,1,interação longa e útil
+33,1,interação moderada e útil
+137,1,interação longa e útil
+277,0,interação longa e inútil
+262,0,interação longa e inútil
+230,0,interação longa e inútil
+114,0,interação longa e inútil
+67,0,interação longa e inútil
+105,1,interação longa e útil
+151,1,interação longa e útil
+213,1,interação longa e útil
+151,0,interação longa e inútil
+296,0,interação longa e inútil
+191,0,interação longa e inútil
+295,1,interação longa e útil
+136,0,interação longa e inútil
+82,0,interação longa e inútil
+50,0,interação rápida e inútil
+174,1,interação longa e útil
+282,1,interação longa e útil
+89,0,interação longa e inútil
+114,1,interação longa e útil
+257,1,interação longa e útil
+42,0,interação rápida e inútil
+177,0,interação longa e inútil
+72,0,interação longa e inútil
+66,1,interação longa e útil
+235,0,interação longa e inútil
+10,0,interação rápida e inútil
+103,1,interação longa e útil
+252,0,interação longa e inútil
+108,0,interação longa e inútil
+289,1,interação longa e útil
+70,0,interação longa e inútil
+174,1,interação longa e útil
+101,0,interação longa e inútil
+108,0,interação longa e inútil
+100,0,interação longa e inútil
+286,1,interação longa e útil
+60,0,interação longa e inútil
+274,1,interação longa e útil
+123,1,interação longa e útil
+160,0,interação longa e inútil
+157,1,interação longa e útil
+162,0,interação longa e inútil
+164,1,interação longa e útil
+188,0,interação longa e inútil
+168,1,interação longa e útil
+225,1,interação longa e útil
+92,0,interação longa e inútil

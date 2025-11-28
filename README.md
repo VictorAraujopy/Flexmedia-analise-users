@@ -1,4 +1,4 @@
-🚀 Totem Inteligente "Smart-Guide" - FlexMedia Challenge
+## 🚀 Totem Inteligente "Smart-Guide" - FlexMedia Challenge
 
 Este projeto simula a arquitetura e a implementação de um **Totem Inteligente "Smart-Guide"** para o FlexMedia Challenge. O objetivo é demonstrar um pipeline completo de **Edge-to-Cloud**, integrando a coleta de dados de sensores simulados, persistência em **Oracle Database**, processamento inteligente com **Machine Learning** e visualização em um **Dashboard** analítico.
 

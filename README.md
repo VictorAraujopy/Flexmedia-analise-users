@@ -84,7 +84,7 @@ O Totem Smart-Guide foi focado sob o princípio de Privacidade por Design, garan
 
 ## ✅ Entregáveis
 
-### O vídeo de demonstração do fluxo de dados (Coleta → SQL → Análise ML → Dashboard) pode ser acessado no link abaixo.
+### O vídeo de demonstração do fluxo de dados (Coleta → SQL → Análise ML → Dashboard) pode ser acessado no link abaixo:
 
 **[▶️ Vídeo de Demonstração](https://youtu.be/IsyxFJXJOS8?si=Tn-UwoW30bB2KLrI)**
 

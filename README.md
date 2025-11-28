@@ -4,6 +4,18 @@
 
 ---
 
+## 🤝 Responsabilidades da Equipe
+
+| Membro | Responsabilidade Principal |
+| :--- | :--- |
+| Jonathan Gomes Ribeiro Franco | Estrutura e Banco de Dados |
+| Pedro Zanon Castro | Simulação e Coleta de Dados |
+| Filipe Marques Previato | Análise e Inteligência Artificial |
+| Victor Araujo Ferreira | Visualização e Dashboard |
+| Jacqueline Nanami Matushima | Gestão, Documentação e Vídeo | 
+
+---
+
 ## 💡 Sobre o Projeto: Smart-Guide
 
 O **Totem Inteligente "Smart-Guide" FlexMedia** é uma solução de ponta desenvolvida para **museus e exposições culturais**. Ele visa transformar a experiência passiva do visitante em um engajamento inteligente, fornecendo, em tempo real, **insights acionáveis** para otimizar a curadoria e o layout das exposições.
@@ -67,14 +79,4 @@ O Totem Smart-Guide foi focado sob o princípio de Privacidade por Design, garan
 * **Autenticação**: A comunicação é protegida por API Keys, garantindo que apenas os Totens autorizados possam enviar dados ao sistema.
 ---
 
-## 🤝 Contribuições e Responsabilidades da Equipe
 
-| Membro | Responsabilidade Principal |
-| :--- | :--- |
-| Jonathan Gomes Ribeiro Franco | Estrutura e Banco de Dados |
-| Pedro Zanon Castro | Simulação e Coleta de Dados |
-| Filipe Marques Previato | Análise e Inteligência Artificial |
-| Victor Araujo Ferreira | Visualização e Dashboard |
-| Jacqueline Nanami Matushima | Gestão, Documentação e Vídeo | 
-
----

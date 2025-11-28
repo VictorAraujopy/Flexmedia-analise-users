@@ -1,0 +1,3 @@
+WiFi
+HTTPClient
+WiFiClientSecure

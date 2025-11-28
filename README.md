@@ -1,68 +1,98 @@
-# 🚀 Sistema de Análise de Interação (FlexMedia)
+🚀 Totem Inteligente "Smart-Guide" - FlexMedia Challenge
 
-Este projeto simula um sistema completo de coleta, análise e visualização de dados de interação em um painel digital, utilizando **Python**, **Flask** e **Oracle Database**.
+Este projeto simula a arquitetura e a implementação de um **Totem Inteligente "Smart-Guide"** para o FlexMedia Challenge. O objetivo é demonstrar um pipeline completo de **Edge-to-Cloud**, integrando a coleta de dados de sensores simulados, persistência em **Oracle Database**, processamento inteligente com **Machine Learning** e visualização em um **Dashboard** analítico.
 
----
-
-## 🎯 Objetivo Geral
-
-Construir um pipeline de dados que começa com a **simulação** da coleta (Wokwi), passa pelo **armazenamento** no Oracle, pela **análise** (Pessoa 3) e finaliza na **visualização** (Dashboard/Pessoa 4).
+O projeto atende aos requisitos da Sprint 2 do Challenge, focando na integração funcional entre hardware e software para gerar métricas acionáveis de engajamento e utilidade.
 
 ---
 
-## 👥 Divisão de Tarefas
+## 🎯 Objetivos do Projeto
 
-O projeto segue esta divisão de responsabilidades:
+O projeto visa demonstrar a integração funcional entre os módulos, conforme os requisitos do desafio:
 
-| Pessoa | Foco Principal | Tarefas Chave | Tecnologias Principais |
-| :--- | :--- | :--- | :--- |
-| **Pessoa 1** | Estrutura e Banco de Dados | Modelar e criar o DB Oracle para receber e armazenar todos os dados dos sensores. | Oracle Database, SQL |
-| **Pessoa 2 (Você)** | Simulação e Coleta de Dados | Criar a simulação dos sensores e enviar dados brutos (`valor_sensor`, `satisfacao`, `tempo_duracao`) para o Banco de Dados. | Wokwi, Python, Flask, `oracledb` |
-| **Pessoa 3** | Análise e Inteligência Artificial | Conectar-se ao DB, realizar a análise dos dados e aplicar Machine Learning (ML). | Python (Pandas, Scikit-learn) |
-| **Pessoa 4** | Visualização e Dashboard | Desenvolver a interface visual que exibe os resultados da análise da Pessoa 3. | Python (Streamlit/Dash) |
-| **Pessoa 5** | Gestão e Documentação | Coordenar o projeto, garantir o código no GitHub e documentar. | GitHub |
+1. **Integração Funcional:** Conectar sensores simulados (Wokwi/ESP32) a um backend Flask e persistir dados em um banco de dados SQL (Oracle).
 
----
+1. **Estrutura de Dados:** Registrar e estruturar dados de interação (`valor_sensor`, `satisfacao`, `tempo_duracao`).
 
-## 🛠️ Tecnologias Utilizadas
+1. **Inteligência de ML:** Aplicar Machine Learning Supervisionado (Árvore de Decisão) para classificar o tipo de interação do usuário.
 
-*   **Linguagem:** Python 3
-*   **API:** Flask (Responsável pela comunicação entre o Wokwi e o DB)
-*   **Banco de Dados:** Oracle Database
-*   **Conexão DB:** `oracledb`
-*   **Simulação:** Wokwi ou Python Scripts
+1. **Visualização:** Criar um dashboard front-end simples (Streamlit) para acompanhar métricas de uso e os insights gerados pelo ML.
+
+1. **Conformidade:** Garantir a anonimização dos dados na borda (Edge Computing) e a segurança na comunicação (HTTPS/TLS).
 
 ---
 
-## ⚙️ Configuração do Ambiente (Backend)
+## 🏗️ Arquitetura e Fluxo de Dados
 
-Siga estes passos para configurar e rodar o servidor da API:
+A solução adota um modelo **Edge-to-Cloud** dividido em três camadas principais:
 
-### 1. Instalação de Dependências
+### 1. Camada de Borda (Edge Computing - Wokwi/ESP32)
+
+Responsável pela coleta de dados e anonimização.
+
+| Componente | Função | Detalhes de Implementação |
+| --- | --- | --- |
+| **Hardware Simulado** | ESP32 (via Wokwi) | Utiliza um sensor PIR (presença) e um botão (interação útil). |
+| **Coleta** | `sketch.ino` | O código registra o início da sessão (PIR `HIGH`) e o fim (PIR `LOW`), calculando a `tempo_duracao`. O botão registra a `satisfacao`. |
+| **Comunicação** | HTTPS/TLS | Envia os dados brutos (JSON) via `POST` para a API do Backend, garantindo a segurança. |
+
+### 2. Camada de Nuvem (Backend, Persistência e ML)
+
+O backend centraliza a recepção, o armazenamento e a inteligência.
+
+| Componente | Tecnologia | Arquivo | Função |
+| --- | --- | --- | --- |
+| **API Gateway** | Flask | `api.py` | Recebe o JSON via `POST` no endpoint `/api/dados_sensor` e valida a integridade dos dados. |
+| **Persistência** | Oracle Database | `db_config.py` | Gerencia o Pool de Conexões e executa o `INSERT` na tabela `logs_sensores`. |
+| **Inteligência** | Python/Scikit-learn | `DataClass.py` | Treina um modelo de Árvore de Decisão para classificar as sessões em 6 categorias de experiência (Ex: "interação longa e útil"). |
+
+### 3. Camada de Visualização (Dashboard)
+
+Responsável por transformar os insights do ML em métricas visuais.
+
+| Componente | Tecnologia | Arquivo | Função |
+| --- | --- | --- | --- |
+| **Dashboard** | Streamlit | `dash.py` | Consome o arquivo `dados_classificados_ml.csv` para exibir KPIs, Gráfico Donut e o Gráfico de Velocímetro (Taxa de Utilidade). |
+
+---
+
+## ⚙️ Configuração e Execução
+
+Para rodar o projeto, siga os passos abaixo:
+
+### 1. Configuração do Ambiente Python (Backend e ML)
+
+O backend e o módulo de Machine Learning são escritos em Python.
+
+#### 1.1. Instalação de Dependências
+
+Crie e ative um ambiente virtual (recomendado) e instale as bibliotecas necessárias:
 
 ```bash
-## Crie e ative seu ambiente virtual (recomendado)
+# Crie e ative seu ambiente virtual
 python3 -m venv venv
 source venv/bin/activate 
 
-## Instale as bibliotecas necessárias
-pip install flask oracledb python-dotenv
+# Instale as bibliotecas necessárias
+# Flask, oracledb, python-dotenv (para o Backend)
+# pandas, scikit-learn, streamlit, plotly (para o ML e Dashboard)
+pip install flask oracledb python-dotenv pandas scikit-learn streamlit plotly
 ```
 
-### 2. Configuração do Banco de Dados
+#### 1.2. Configuração do Banco de Dados Oracle
 
-Crie um arquivo chamado `.env` na raiz da sua pasta `Backend` com as suas credenciais de acesso ao Oracle, que são lidas pelo `db_config.py`:
+O projeto utiliza o Oracle Database. Crie um arquivo chamado `.env` na raiz do projeto com suas credenciais de acesso:
 
-```dotenv
-## Exemplo de arquivo .env
+```
+## Arquivo .env
 DB_USER="seu_usuario_oracle"
 DB_PASS="sua_senha_oracle"
 DB_DSN="seu_host:sua_porta/seu_servico"
 ```
 
-### 3. Execução da API
+### 2. Execução do Backend (API)
 
-A API deve ser iniciada primeiro, pois é o destino dos dados da Pessoa 2 (Wokwi).
+O `api.py` deve ser iniciado primeiro para receber os dados do Wokwi.
 
 ```bash
 python3 api.py
@@ -70,24 +100,59 @@ python3 api.py
 
 Se a conexão for bem-sucedida, o servidor Flask estará rodando em `http://0.0.0.0:5000/`.
 
+### 3. Execução do Módulo de Machine Learning
+
+O `DataClass.py` processa os dados brutos (simulados em `dados_ficticios.csv` ) e gera o arquivo classificado para o Dashboard.
+
+```bash
+python3 DataClass.py
+```
+
+Este script irá gerar o arquivo `dados_classificados_ml.csv`.
+
+### 4. Execução do Dashboard
+
+O `dash.py` inicia o painel de visualização.
+
+```bash
+streamlit run dash.py
+```
+
+O Dashboard será aberto no seu navegador, exibindo as métricas de UX.
+
 ---
 
-## 👨‍💻 Fluxo de Dados e Endpoints
+## 🌐 Simulação de Sensores (Wokwi/ESP32)
 
-### A. Coleta de Dados (Pessoa 2)
+A simulação do hardware é feita via Wokwi, utilizando o código `sketch.ino`.
 
-O Wokwi envia dados brutos via `GET` para este endpoint. O `api.py` recebe a requisição e salva no `logs_sensores`.
+### 1. Bibliotecas (Inclusas no Wokwi)
 
-*   **Endpoint:** `/api/dados_sensor`
-*   **Método:** `GET`
-*   **Parâmetros na URL:** `valor_sensor`, `satisfacao`, `tempo_duracao`
-*   **URL de Exemplo para o Wokwi:**
-    `http://<SEU_IP>:5000/api/dados_sensor?valor_sensor=150&satisfacao=4&tempo_duracao=120`
+O código `sketch.ino` utiliza as seguintes bibliotecas do ESP32:
 
-### B. Relatório/Dashboard (Pessoa 4)
+- `WiFi`
 
-O Dashboard consulta este endpoint para buscar o histórico completo dos dados brutos para gerar gráficos e métricas.
+- `HTTPClient`
 
-*   **Endpoint:** `/api/relatorio`
-*   **Método:** `GET`
-*   **Retorno:** JSON contendo todos os registros da tabela `logs_sensores`.
+- `WiFiClientSecure`
+
+### 2. Lógica de Envio
+
+O `sketch.ino` envia os dados via `POST` para o endpoint da API:
+
+- **Endpoint:** `https://<SEU_TUNNEL_URL>/api/dados_sensor`
+
+- **Método:** `POST`
+
+- **Corpo da Requisição (JSON ):**
+
+   ```json
+   {
+       "valor_sensor": 1,
+       "satisfacao": <0 ou 1>,
+       "tempo_duracao": <segundos>
+   }
+   ```
+
+- **Observação:** O `sketch.ino` utiliza `client.setInsecure()` para simplificar a conexão HTTPS em ambientes de simulação como o Wokwi.
+

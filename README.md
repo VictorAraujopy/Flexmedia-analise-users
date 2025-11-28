@@ -82,4 +82,14 @@ O Totem Smart-Guide foi focado sob o princípio de Privacidade por Design, garan
 * **Autenticação**: A comunicação é protegida por API Keys, garantindo que apenas os Totens autorizados possam enviar dados ao sistema.
 ---
 
+## ✅ Entregáveis
+
+### O vídeo de demonstração do fluxo de dados (Coleta → SQL → Análise ML → Dashboard) pode ser acessado no link abaixo.
+
+**[▶️ Vídeo de Demonstração](https://youtu.be/IsyxFJXJOS8?si=Tn-UwoW30bB2KLrI)**
+
+### A descrição detalhada da arquitetura Edge-to-Cloud, o fluxo de dados (Entrada → Processamento → Saída) e os prints de execução estão disponíveis na documentação técnica completa em PDF:
+
+[📁 Acessar Documentação Técnica Completa](./DocTec.FlexMedia-FIAP.pdf)
+
 

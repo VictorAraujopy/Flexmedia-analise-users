@@ -1,6 +1,5 @@
 # 🤖 Totem Inteligente "Smart-Guide" FlexMedia
 
-**Status do Projeto:** Concluído - Sprint 2 | **Foco:** Edge Computing, Privacidade e Machine Learning para Curadoria Cultural.
 
 ---
 

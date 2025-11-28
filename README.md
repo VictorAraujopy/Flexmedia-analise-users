@@ -1,5 +1,5 @@
 # 🤖 Totem Inteligente "Smart-Guide" FlexMedia
-
+O Totem Inteligente "Smart-Guide" FlexMedia é uma solução de análise de experiência do usuário (UX) desenvolvida para museus e exposições culturais.
 
 ---
 
@@ -15,13 +15,10 @@
 
 ---
 
-## 💡 Sobre o Projeto: Smart-Guide 
-O Totem Inteligente "Smart-Guide" FlexMedia é uma solução de análise de experiência do usuário (UX) desenvolvida para museus e exposições culturais.
-
 ## O Desafio
 Exposições carecem de métricas objetivas e em tempo real para avaliar a eficácia do conteúdo e do layout, resultando em decisões de curadoria subjetivas.
 
-## A Solução Smart-Guide
+ 💡 A Solução Smart-Guide
 O Smart-Guide resolve isso implementando uma arquitetura Edge-to-Cloud com Machine Learning. Nossa solução converte a presença física e a interação em dados quantificáveis, permitindo:
 
 * **Classificação Inteligente**: Classificar cada sessão como útil ou inútil (fricção).

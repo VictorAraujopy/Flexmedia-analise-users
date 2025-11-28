@@ -1,95 +1,138 @@
-# 🤖 Totem Inteligente "Smart-Guide" FlexMedia
-O Totem Inteligente "Smart-Guide" FlexMedia é uma solução de análise de experiência do usuário desenvolvida para museus e exposições culturais.
+
+O projeto visa demonstrar a integração funcional entre os módulos, conforme os requisitos do desafio:
+
+1.  **Integração Funcional:** Conectar sensores simulados (Wokwi/ESP32) a um backend Flask e persistir dados em um banco de dados SQL (Oracle).
+2.  **Estrutura de Dados:** Registrar e estruturar dados de interação (`valor_sensor`, `satisfacao`, `tempo_duracao`).
+3.  **Inteligência de ML:** Aplicar Machine Learning Supervisionado (Árvore de Decisão) para classificar o tipo de interação do usuário.
+4.  **Visualização:** Criar um dashboard front-end simples (Streamlit) para acompanhar métricas de uso e os insights gerados pelo ML.
+5.  **Conformidade:** Garantir a anonimização dos dados na borda (Edge Computing) e a segurança na comunicação (HTTPS/TLS).
 
 ---
 
-## 🤝 Responsabilidades da Equipe
+## 🏗️ Arquitetura e Fluxo de Dados
 
-| Membro | Responsabilidade Principal |
-| :--- | :--- |
-| Jonathan Gomes Ribeiro Franco | Estrutura e Banco de Dados |
-| Pedro Zanon Castro | Simulação e Coleta de Dados |
-| Filipe Marques Previato | Análise e Inteligência Artificial |
-| Victor Araujo Ferreira | Visualização e Dashboard |
-| Jacqueline Nanami Matushima | Gestão, Documentação e Vídeo | 
+A solução adota um modelo **Edge-to-Cloud** dividido em três camadas principais:
 
----
+### 1. Camada de Borda (Edge Computing - Wokwi/ESP32)
 
-## O Desafio
-Exposições carecem de métricas objetivas e em tempo real para avaliar a eficácia do conteúdo e do layout, resultando em decisões de curadoria subjetivas.
+Responsável pela coleta de dados e anonimização.
 
- 💡 A Solução Smart-Guide
-O Smart-Guide resolve isso implementando uma arquitetura Edge-to-Cloud com Machine Learning. Nossa solução converte a presença física e a interação em dados quantificáveis, permitindo:
-
-* **Classificação Inteligente**: Classificar cada sessão como útil ou inútil (fricção).
-
-* **Insights Acionáveis**: Gerar métricas de Taxa de Utilidade e Potencial de Abandono que a curadoria pode usar para otimizar o espaço e aumentar o engajamento do público.
-
-O Smart-Guide transforma o totem em uma poderosa ferramenta de Business Intelligence para o setor cultural.
-
-### Nossos Diferenciais
-
-| Característica | Detalhamento |
-| :--- | :--- |
-| **Engajamento Inteligente** | Personaliza rotas e conteúdos com base na atenção e interesse do visitante. |
-| **Privacidade por Design (LGPD)** | Processamento de dados anônimos na borda (**Edge Computing**), descartando imagens e enviando apenas metadados criptografados. |
-| **Geração de Insights Acionáveis**| Utiliza Machine Learning para classificar as interações e gerar métricas (Taxa de Utilidade, Duração Média e Heatmaps de Fricção) para a curadoria. |
-
----
-
-## 🏗️ Arquitetura da Solução
-
-A solução é **modular e escalável**, seguindo o princípio de processamento na borda (**Edge**) antes da persistência na **Nuvem**.
-
-### 1. Edge Computing (Hardware & Coleta)
-
-* **Dispositivo:** ESP32-CAM (simulado via Wokwi).
-* **Ação:** O Sensor PIR (presença) e o Botão (interação) ativam o microcontrolador. O dispositivo analisa a atenção, **anonimiza os dados (descarte de imagem)** e calcula a duração da sessão.
-* **Comunicação:** Envio de metadados via HTTPS/TLS para a API Gateway na Nuvem.
-
-### 2. Nuvem (Backend e Processamento)
-
-* **API Gateway:** Implementado em **Python/Flask**, responsável por receber os dados via POST.
-* **Armazenamento:** **Oracle SQL** (simulação) para persistência inicial e centralizada dos dados de interação.
-* **Processamento ML:** Script `DataClass.py` que aplica um modelo de **Árvore de Decisão** para rotular as sessões (Ex: "Interação longa e útil").
-
-### 3. Visualização (Dashboard)
-
-* **Tecnologia:** **Streamlit** (Python).
-* **Função:** Consome o CSV com os dados classificados pelo ML e exibe métricas-chave para a curadoria, como a Taxa de Utilidade, Duração Média e distribuição das 6 categorias de experiência.
-
----
-
-## ⚙️ Tecnologias Principais
-
-| Camada | Ferramenta | Uso no Projeto |
+| Componente | Função | Detalhes de Implementação |
 | :--- | :--- | :--- |
-| **Hardware / Edge** | ESP32, Wokwi | Simulação da coleta de dados e Edge Computing (Anonimização). |
-| **Backend / API** | Python, Flask | Criação do *endpoint* para recebimento seguro de dados. |
-| **Armazenamento** | Oracle SQL | Persistência e gerenciamento centralizado dos dados brutos. |
-| **Inteligência / IA** | Python, Scikit-learn | Modelo de Árvore de Decisão para classificação de UX. |
-| **Visualização** | Streamlit | Dashboard interativo e analítico para a Curadoria. |
+| **Hardware Simulado** | ESP32 (via Wokwi) | Utiliza um sensor PIR (presença) e um botão (interação útil). |
+| **Coleta** | `sketch.ino` | O código registra o início da sessão (PIR `HIGH`) e o fim (PIR `LOW`), calculando a `tempo_duracao`. O botão registra a `satisfacao`. |
+| **Comunicação** | HTTPS/TLS | Envia os dados brutos (JSON) via `POST` para a API do Backend, garantindo a segurança. |
+
+### 2. Camada de Nuvem (Backend, Persistência e ML)
+
+O backend centraliza a recepção, o armazenamento e a inteligência.
+
+| Componente | Tecnologia | Arquivo | Função |
+| :--- | :--- | :--- | :--- |
+| **API Gateway** | Flask | `api.py` | Recebe o JSON via `POST` no endpoint `/api/dados_sensor` e valida a integridade dos dados. |
+| **Persistência** | Oracle Database | `db_config.py` | Gerencia o Pool de Conexões e executa o `INSERT` na tabela `logs_sensores`. |
+| **Inteligência** | Python/Scikit-learn | `DataClass.py` | Treina um modelo de Árvore de Decisão para classificar as sessões em 6 categorias de experiência (Ex: "interação longa e útil"). |
+
+### 3. Camada de Visualização (Dashboard)
+
+Responsável por transformar os insights do ML em métricas visuais.
+
+| Componente | Tecnologia | Arquivo | Função |
+| :--- | :--- | :--- | :--- |
+| **Dashboard** | Streamlit | `dash.py` | Consome o arquivo `dados_classificados_ml.csv` para exibir KPIs, Gráfico Donut e o Gráfico de Velocímetro (Taxa de Utilidade). |
 
 ---
 
-## 🔒 Segurança e Privacidade (LGPD)
-O Totem Smart-Guide foi focado sob o princípio de Privacidade por Design, garantindo a conformidade com a LGPD.
+## ⚙️ Configuração e Execução
 
-* **Anonimização e Edge Computing**: Para proteger o usuário, o processamento de dados ocorre na borda (no ESP32). A imagem bruta é descartada localmente, e a nuvem recebe apenas metadados não identificáveis, como a duração e o tipo de interação.
+Para rodar o projeto, siga os passos abaixo:
 
-* **Comunicação Criptografada**: A transmissão dos metadados entre o Totem e a API é feita exclusivamente por canais seguros, utilizando TLS/HTTPS, assegurando a integridade e confidencialidade dos dados em trânsito.
+### 1. Configuração do Ambiente Python (Backend e ML)
 
-* **Autenticação**: A comunicação é protegida por API Keys, garantindo que apenas os Totens autorizados possam enviar dados ao sistema.
+O backend e o módulo de Machine Learning são escritos em Python.
+
+#### 1.1. Instalação de Dependências
+
+Crie e ative um ambiente virtual (recomendado) e instale as bibliotecas necessárias:
+
+```bash
+# Crie e ative seu ambiente virtual
+python3 -m venv venv
+source venv/bin/activate 
+
+# Instale as bibliotecas necessárias
+# Flask, oracledb, python-dotenv (para o Backend)
+# pandas, scikit-learn, streamlit, plotly (para o ML e Dashboard)
+pip install flask oracledb python-dotenv pandas scikit-learn streamlit plotly
+```
+
+#### 1.2. Configuração do Banco de Dados Oracle
+
+O projeto utiliza o Oracle Database. Crie um arquivo chamado `.env` na raiz do projeto com suas credenciais de acesso:
+
+```dotenv
+## Arquivo .env
+DB_USER="seu_usuario_oracle"
+DB_PASS="sua_senha_oracle"
+DB_DSN="seu_host:sua_porta/seu_servico"
+```
+
+### 2. Execução do Backend (API)
+
+O `api.py` deve ser iniciado primeiro para receber os dados do Wokwi.
+
+```bash
+python3 api.py
+```
+
+Se a conexão for bem-sucedida, o servidor Flask estará rodando em `http://0.0.0.0:5000/`.
+
+### 3. Execução do Módulo de Machine Learning
+
+O `DataClass.py` processa os dados brutos (simulados em `dados_ficticios.csv`) e gera o arquivo classificado para o Dashboard.
+
+```bash
+python3 DataClass.py
+```
+
+Este script irá gerar o arquivo `dados_classificados_ml.csv`.
+
+### 4. Execução do Dashboard
+
+O `dash.py` inicia o painel de visualização.
+
+```bash
+streamlit run dash.py
+```
+
+O Dashboard será aberto no seu navegador, exibindo as métricas de UX.
+
 ---
 
-## ✅ Entregáveis
+## 🌐 Simulação de Sensores (Wokwi/ESP32)
 
-### O vídeo de demonstração do fluxo de dados (Coleta → SQL → Análise ML → Dashboard) pode ser acessado no link abaixo:
+A simulação do hardware é feita via Wokwi, utilizando o código `sketch.ino`.
 
-**[▶️ Vídeo de Demonstração](https://youtu.be/IsyxFJXJOS8?si=Tn-UwoW30bB2KLrI)**
+### 1. Bibliotecas (Inclusas no Wokwi)
 
-### A descrição detalhada da arquitetura Edge-to-Cloud, o fluxo de dados (Entrada → Processamento → Saída) e os prints de execução estão disponíveis na documentação técnica completa em PDF:
+O código `sketch.ino` utiliza as seguintes bibliotecas do ESP32:
 
-[📁 Acessar Documentação Técnica Completa](./DocTec.FlexMedia-FIAP.pdf)
+*   `WiFi`
+*   `HTTPClient`
+*   `WiFiClientSecure`
 
+### 2. Lógica de Envio
 
+O `sketch.ino` envia os dados via `POST` para o endpoint da API:
+
+*   **Endpoint:** `https://<SEU_TUNNEL_URL>/api/dados_sensor`
+*   **Método:** `POST`
+*   **Corpo da Requisição (JSON):**
+    ```json
+    {
+        "valor_sensor": 1,
+        "satisfacao": <0 ou 1>,
+        "tempo_duracao": <segundos>
+    }
+    ```
+*   **Observação:** O `sketch.ino` utiliza `client.setInsecure()` para simplificar a conexão HTTPS em ambientes de simulação como o Wokwi.

@@ -1,7 +1,7 @@
 import oracledb
 import os
 from dotenv import load_dotenv 
-
+import pandas as pd
 load_dotenv()
 
 DB_USER = os.getenv("DB_USER")
@@ -47,4 +47,22 @@ def salvar_log_sensor(dados):
         print(f"[DB INSERT] Log salvo: {dados_para_banco}")
     except Exception as e:
         print(f"[DB ERRO - INSERT]: {e}")
-        
+
+def get_dados_sensor():
+    # A função deve conectar ao pool, executar:
+    #   SELECT valor_sensor, satisfacao, tempo_duracao FROM logs_sensores
+    # e retornar um pd.DataFrame com essas 3 colunas.
+
+    dados_simulados = [
+        {"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 120},
+        {"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 100},
+        {"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 200},
+        {"valor_sensor": 1, "satisfacao": 0, "tempo_duracao": 11},
+        {"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 65},
+        {"valor_sensor": 1, "satisfacao": 0, "tempo_duracao": 35},
+        {"valor_sensor": 1, "satisfacao": 0, "tempo_duracao": 8},
+        {"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 75},
+        {"valor_sensor": 0, "satisfacao": 0, "tempo_duracao": 0},
+    ]
+
+    return pd.DataFrame(dados_simulados)

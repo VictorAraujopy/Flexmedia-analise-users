@@ -1,6 +1,6 @@
 import oracledb
 import os
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
 import pandas as pd
 load_dotenv()
 
@@ -49,20 +49,17 @@ def salvar_log_sensor(dados):
         print(f"[DB ERRO - INSERT]: {e}")
 
 def get_dados_sensor():
-    # A função deve conectar ao pool, executar:
-    #   SELECT valor_sensor, satisfacao, tempo_duracao FROM logs_sensores
-    # e retornar um pd.DataFrame com essas 3 colunas.
+    sql = "SELECT valor_sensor, satisfacao, tempo_duracao FROM logs_sensores"
 
-    dados_simulados = [
-        {"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 120},
-        {"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 100},
-        {"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 200},
-        {"valor_sensor": 1, "satisfacao": 0, "tempo_duracao": 11},
-        {"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 65},
-        {"valor_sensor": 1, "satisfacao": 0, "tempo_duracao": 35},
-        {"valor_sensor": 1, "satisfacao": 0, "tempo_duracao": 8},
-        {"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 75},
-        {"valor_sensor": 0, "satisfacao": 0, "tempo_duracao": 0},
-    ]
+    try:
 
-    return pd.DataFrame(dados_simulados)
+        with pool.acquire() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+                rows = cursor.fetchall()
+
+        return pd.DataFrame(rows, columns=["valor_sensor", "satisfacao", "tempo_duracao"])
+
+    except Exception as e:
+        print ("erro ao obter dados")
+        return e

@@ -1,64 +1,75 @@
 import pandas as pd
+import os
+from pathlib import Path
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
 
-# 1. Carregar o arquivo (que agora tem colunas: tempo_interacao, util)
-df = pd.read_csv(r"data/dados_ficticios.csv")
 
-# Renomear a coluna 'util' para 'teve_duvida' para manter o padrão
-df = df.rename(columns={"util": "teve_duvida"})
+def run_pipeline(df):
+    """
+    Recebe o DataFrame do banco de dados, aplica as regras de negócio,
+    treina o modelo de ML, salva o CSV e retorna o DataFrame classificado.
+    """
+    print("Iniciando o pipeline de dados no DataClass...")
 
-# 2. Aplicar a Regra de Negócio (Isso cria a "classificacao_real" ou "Target")
-def classificar_experiencia_regras(row):
-    if row["tempo_interacao"] < 20:
-        class_tempo = "uso baixo"
-    elif row["tempo_interacao"] < 60:
-        class_tempo = "uso moderado"
-    else:
-        class_tempo = "uso intenso"
-    
-    if class_tempo == "uso intenso" and row["teve_duvida"] == 1:
-        return "interação longa e útil"
-    elif class_tempo == "uso intenso" and row["teve_duvida"] == 0:
-        return "interação longa e inútil"
-    elif class_tempo == "uso moderado" and row["teve_duvida"] == 1:
-        return "interação moderada e útil"
-    elif class_tempo == "uso baixo" and row["teve_duvida"] == 1:
-        return "interação rápida mas útil"
-    else:
-        return "interação rápida e inútil"
+    # 1. Tratar coluna (caso venha do banco como 'util')
+    if "util" in df.columns:
+        df = df.rename(columns={"util": "teve_duvida"})
 
-df["class_experiencia"] = df.apply(classificar_experiencia_regras, axis=1)
+    # 2. Corrigir e aplicar a Regra de Negócio
+    def classificar_experiencia_regras(row):
+        if row["tempo_interacao"] < 20:
+            class_tempo = "uso baixo"
+        elif row["tempo_interacao"] < 60:
+            class_tempo = "uso moderado"
+        else:
+            class_tempo = "uso intenso"
 
-print("Dados carregados e rotulados com sucesso!")
+        if class_tempo == "uso intenso" and row["teve_duvida"] == 1:
+            return "interação longa e útil"
+        elif class_tempo == "uso intenso" and row["teve_duvida"] == 0:
+            return "interação longa e inútil"
+        elif class_tempo == "uso moderado" and row["teve_duvida"] == 1:
+            return "interação moderada e útil"
+        # BUG CORRIGIDO AQUI: Adicionada a condição exata para moderada e inútil
+        elif class_tempo == "uso moderado" and row["teve_duvida"] == 0:
+            return "interação moderada e inútil"
+        elif class_tempo == "uso baixo" and row["teve_duvida"] == 1:
+            return "interação rápida mas útil"
+        else:
+            return "interação rápida e inútil"
 
-# 3. Preparar Features (Removemos 'tipo_clique' pois não existe mais no input)
-features = ["tempo_interacao", "teve_duvida"]
-X = df[features]
-y = df["class_experiencia"]
+    # Aplica a regra para criar o Target (y)
+    df["class_experiencia"] = df.apply(classificar_experiencia_regras, axis=1)
 
-# Separação Treino e Teste (para validar a acurácia)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    # 3. Preparar Features e Treinar a Árvore de Decisão
+    features = ["tempo_interacao", "teve_duvida"]
+    X = df[features]
+    y = df["class_experiencia"]
 
-print("Treinando o modelo de Árvore de Decisão...")
-clf = DecisionTreeClassifier(max_depth=5, random_state=42)
-clf.fit(X_train, y_train)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-# Avaliar precisão
-previsoes_teste = clf.predict(X_test)
-acuracia = accuracy_score(y_test, previsoes_teste)
-print(f"Acurácia do modelo: {acuracia * 100:.2f}%")
+    clf = DecisionTreeClassifier(max_depth=5, random_state=42)
+    clf.fit(X_train, y_train)
 
-# 4. Gerar o CSV Final
-# Importante: Como você quer transformar a lista inteira, vamos aplicar a IA no dataframe TODO
-df["classificacao_ia"] = clf.predict(X)
+    # Avaliar e printar acurácia para fins de log/documentação da Sprint
+    acuracia = accuracy_score(y_test, clf.predict(X_test))
+    print(f"Acurácia do modelo: {acuracia * 100:.2f}%")
 
-# Selecionar apenas as colunas que você pediu
-df_export = df[["tempo_interacao", "teve_duvida", "classificacao_ia"]]
+    # 4. Gerar as previsões da IA no DataFrame completo
+    df["classificacao_ia"] = clf.predict(X)
 
-df_export.to_csv("dados_classificados_ml.csv", index=False)
+    # 5. Corrigir o Path e Salvar CSV de forma segura
+    # Path(__file__).parent garante que o CSV seja salvo na mesma pasta deste script,
+    # independente de onde o terminal chamou o comando 'streamlit run'
+    base_dir = Path(__file__).parent.resolve()
+    caminho_csv = base_dir / "dados_classificados_ml.csv"
 
-print("\n--- PROCESSO CONCLUÍDO ---")
-print("Arquivo gerado: dados_classificados_ml.csv")
-print(df_export.head()) # Mostra as primeiras linhas para conferir
+    # Exportar e salvar
+    df_export = df[["tempo_interacao", "teve_duvida", "classificacao_ia"]]
+    df_export.to_csv(caminho_csv, index=False)
+    print(f"Arquivo CSV gerado com sucesso em: {caminho_csv}")
+
+    # 6. Retorna o DataFrame completo para o dash.py renderizar os gráficos
+    return df

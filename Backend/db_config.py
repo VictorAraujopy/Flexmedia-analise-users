@@ -2,7 +2,7 @@ import oracledb
 import os
 from dotenv import load_dotenv
 import pandas as pd
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
@@ -22,10 +22,14 @@ def init_db_pool():
         return False
     
 def salvar_log_sensor(dados):
-    
+
     """
         (INSERT) Salva os dados brutos: valor_sensor, satisfacao e tempo_duracao.
     """
+
+    if pool is None:
+        print("[DB ERRO] Pool não inicializado")
+        return
     
     sql = """ 
         INSERT INTO logs_sensores (valor_sensor, satisfacao, tempo_duracao)
@@ -45,11 +49,17 @@ def salvar_log_sensor(dados):
                 cursor.execute(sql, dados_para_banco)
                 connection.commit()
         print(f"[DB INSERT] Log salvo: {dados_para_banco}")
+        return True
     except Exception as e:
         print(f"[DB ERRO - INSERT]: {e}")
+        return False
 
 def get_dados_sensor():
     sql = "SELECT valor_sensor, satisfacao, tempo_duracao FROM logs_sensores"
+
+    if pool is None:
+        print("[DB ERRO] Pool não inicializado")
+        return pd.DataFrame(columns=["valor_sensor", "satisfacao", "tempo_duracao"])
 
     try:
 
@@ -61,5 +71,5 @@ def get_dados_sensor():
         return pd.DataFrame(rows, columns=["valor_sensor", "satisfacao", "tempo_duracao"])
 
     except Exception as e:
-        print ("erro ao obter dados")
-        return e
+        print(f"[DB ERRO - SELECT]: {e}")
+        return pd.DataFrame(columns=["valor_sensor", "satisfacao", "tempo_duracao"])

@@ -3,7 +3,6 @@ import pandas as pd
 import os
 import plotly.graph_objects as go
 import plotly.express as px
-from Backend.db_config import init_db_pool
 from db_config import init_db_pool
 from db_config import get_dados_sensor
 from DataClass import run_pipeline

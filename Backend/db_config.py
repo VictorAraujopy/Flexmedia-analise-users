@@ -1,7 +1,7 @@
 import pandas as pd
 import oracledb
 
-# --- CREDENCIAIS FIAP ---
+# ---- CREDENCIAIS FIAP ----
 MEU_USUARIO = "rm567109"
 MINHA_SENHA = "fiap26"
 MEU_HOST = "oracle.fiap.com.br:1521/ORCL"

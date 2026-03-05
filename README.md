@@ -1,158 +1,201 @@
-## 🚀 Totem Inteligente "Smart-Guide" - FlexMedia Challenge
+# Totem Inteligente "Smart-Guide" - FlexMedia Challenge
 
-Este projeto simula a arquitetura e a implementação de um **Totem Inteligente "Smart-Guide"** para o FlexMedia Challenge. O objetivo é demonstrar um pipeline completo de **Edge-to-Cloud**, integrando a coleta de dados de sensores simulados, persistência em **Oracle Database**, processamento inteligente com **Machine Learning** e visualização em um **Dashboard** analítico.
-
-O projeto atende aos requisitos da Sprint 2 do Challenge, focando na integração funcional entre hardware e software para gerar métricas acionáveis de engajamento e utilidade.
+Pipeline completo **Edge-to-Cloud**: sensores simulados (Wokwi/ESP32) enviam dados para uma API Flask, que persiste no Oracle Database. Um modelo de Machine Learning classifica a satisfacao do usuario e um Dashboard Streamlit exibe os resultados.
 
 ---
 
-## 🎯 Objetivos do Projeto
+## Estrutura do Projeto
 
-O projeto visa demonstrar a integração funcional entre os módulos, conforme os requisitos do desafio:
-
-1. **Integração Funcional:** Conectar sensores simulados (Wokwi/ESP32) a um backend Flask e persistir dados em um banco de dados SQL (Oracle).
-
-1. **Estrutura de Dados:** Registrar e estruturar dados de interação (`valor_sensor`, `satisfacao`, `tempo_duracao`).
-
-1. **Inteligência de ML:** Aplicar Machine Learning Supervisionado (Árvore de Decisão) para classificar o tipo de interação do usuário.
-
-1. **Visualização:** Criar um dashboard front-end simples (Streamlit) para acompanhar métricas de uso e os insights gerados pelo ML.
-
-1. **Conformidade:** Garantir a anonimização dos dados na borda (Edge Computing) e a segurança na comunicação (HTTPS/TLS).
+```
+Backend/
+├── api.py          # API Flask - recebe dados do sensor via POST
+├── db_config.py    # Conexao com Oracle (pool) + queries INSERT/SELECT
+├── DataClass.py    # Pipeline de ML (Decision Tree) - classifica satisfacao
+├── dash.py         # Dashboard Streamlit com graficos e KPIs
+└── .env            # Credenciais do banco (NAO commitado)
+```
 
 ---
 
-## 🏗️ Arquitetura e Fluxo de Dados
+## Fluxo Completo
 
-A solução adota um modelo **Edge-to-Cloud** dividido em três camadas principais:
+```
+Wokwi/ESP32  ──POST──>  api.py  ──INSERT──>  Oracle DB
+                                                  │
+                                              SELECT dados
+                                                  │
+                                dash.py  <──ML──  DataClass.py
+                              (Streamlit)       (Decision Tree)
+```
 
-### 1. Camada de Borda (Edge Computing - Wokwi/ESP32)
-
-Responsável pela coleta de dados e anonimização.
-
-| Componente | Função | Detalhes de Implementação |
-| --- | --- | --- |
-| **Hardware Simulado** | ESP32 (via Wokwi) | Utiliza um sensor PIR (presença) e um botão (interação útil). |
-| **Coleta** | `sketch.ino` | O código registra o início da sessão (PIR `HIGH`) e o fim (PIR `LOW`), calculando a `tempo_duracao`. O botão registra a `satisfacao`. |
-| **Comunicação** | HTTPS/TLS | Envia os dados brutos (JSON) via `POST` para a API do Backend, garantindo a segurança. |
-
-### 2. Camada de Nuvem (Backend, Persistência e ML)
-
-O backend centraliza a recepção, o armazenamento e a inteligência.
-
-| Componente | Tecnologia | Arquivo | Função |
-| --- | --- | --- | --- |
-| **API Gateway** | Flask | `api.py` | Recebe o JSON via `POST` no endpoint `/api/dados_sensor` e valida a integridade dos dados. |
-| **Persistência** | Oracle Database | `db_config.py` | Gerencia o Pool de Conexões e executa o `INSERT` na tabela `logs_sensores`. |
-| **Inteligência** | Python/Scikit-learn | `DataClass.py` | Treina um modelo de Árvore de Decisão para classificar as sessões em 6 categorias de experiência (Ex: "interação longa e útil"). |
-
-### 3. Camada de Visualização (Dashboard)
-
-Responsável por transformar os insights do ML em métricas visuais.
-
-| Componente | Tecnologia | Arquivo | Função |
-| --- | --- | --- | --- |
-| **Dashboard** | Streamlit | `dash.py` | Consome o arquivo `dados_classificados_ml.csv` para exibir KPIs, Gráfico Donut e o Gráfico de Velocímetro (Taxa de Utilidade). |
+1. O **ESP32 (Wokwi)** detecta presenca (sensor PIR) e registra interacao (botao)
+2. Envia via POST para `http://<IP>:5000/api/dados_sensor`
+3. A **API Flask** valida e salva no **Oracle** (tabela `logs_sensores`)
+4. O **Dashboard** puxa os dados do banco, passa pelo modelo de ML e exibe metricas
 
 ---
 
-## ⚙️ Configuração e Execução
+## Pre-requisitos
 
-Para rodar o projeto, siga os passos abaixo:
+- Python 3.10+
+- Acesso ao Oracle Database (FIAP ou outro)
+- Wokwi com projeto ESP32 configurado (responsabilidade do colega de hardware)
 
-### 1. Configuração do Ambiente Python (Backend e ML)
+---
 
-O backend e o módulo de Machine Learning são escritos em Python.
+## Instalacao
 
-#### 1.1. Instalação de Dependências
-
-Crie e ative um ambiente virtual (recomendado) e instale as bibliotecas necessárias:
+### 1. Clonar e criar ambiente virtual
 
 ```bash
-# Crie e ative seu ambiente virtual
-python3 -m venv venv
-source venv/bin/activate 
+git clone <url-do-repo>
+cd Flexmedia-analise-users
 
-# Instale as bibliotecas necessárias
-# Flask, oracledb, python-dotenv (para o Backend)
-# pandas, scikit-learn, streamlit, plotly (para o ML e Dashboard)
-pip install flask oracledb python-dotenv pandas scikit-learn streamlit plotly
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-#### 1.2. Configuração do Banco de Dados Oracle
+### 2. Instalar dependencias
 
-O projeto utiliza o Oracle Database. Crie um arquivo chamado `.env` na raiz do projeto com suas credenciais de acesso:
-
+```bash
+pip install -r requirements.txt
 ```
-## Arquivo .env
+
+### 3. Configurar o `.env`
+
+Crie o arquivo `Backend/.env` com suas credenciais:
+
+```env
 DB_USER="seu_usuario_oracle"
 DB_PASS="sua_senha_oracle"
-DB_DSN="seu_host:sua_porta/seu_servico"
+DB_DSN="oracle.fiap.com.br:1521/ORCL"
 ```
 
-### 2. Execução do Backend (API)
+### 4. Criar a tabela no Oracle (se ainda nao existir)
 
-O `api.py` deve ser iniciado primeiro para receber os dados do Wokwi.
+```sql
+CREATE TABLE logs_sensores (
+    valor_sensor  NUMBER,
+    satisfacao    NUMBER,
+    tempo_duracao NUMBER
+);
+```
+
+---
+
+## Como Rodar
+
+### Rodar a API (receber dados do Wokwi)
 
 ```bash
+cd Backend
 python3 api.py
 ```
 
-Se a conexão for bem-sucedida, o servidor Flask estará rodando em `http://0.0.0.0:5000/`.
+Saida esperada:
+```
+[DB CONFIG] iniciando Pool de Conexoes...
+[DB CONFIG] Pool de Conexoes criado com SUCESSO
 
-### 3. Execução do Módulo de Machine Learning
-
-O `DataClass.py` processa os dados brutos (simulados em `dados_ficticios.csv` ) e gera o arquivo classificado para o Dashboard.
-
-```bash
-python3 DataClass.py
+--- Conexao com Oracle OK. Iniciando API... ---
+ * Running on http://0.0.0.0:5000
 ```
 
-Este script irá gerar o arquivo `dados_classificados_ml.csv`.
+A API fica escutando em `http://0.0.0.0:5000/api/dados_sensor` (POST).
 
-### 4. Execução do Dashboard
+### Testar a API manualmente (sem Wokwi)
 
-O `dash.py` inicia o painel de visualização.
+Abra outro terminal e envie um POST de teste:
 
 ```bash
+curl -X POST http://localhost:5000/api/dados_sensor \
+  -H "Content-Type: application/json" \
+  -d '{"valor_sensor": 1, "satisfacao": 1, "tempo_duracao": 45}'
+```
+
+Resposta esperada:
+```json
+{"mensagem": "Dados salvos com sucesso"}
+```
+
+A API tambem aceita form-data (formato comum do ESP32):
+```bash
+curl -X POST http://localhost:5000/api/dados_sensor \
+  -d "valor_sensor=1&satisfacao=0&tempo_duracao=8"
+```
+
+### Rodar o Dashboard
+
+```bash
+cd Backend
 streamlit run dash.py
 ```
 
-O Dashboard será aberto no seu navegador, exibindo as métricas de UX.
+O Streamlit abre no navegador (geralmente `http://localhost:8501`) e exibe:
+
+- **KPIs**: total de sessoes, % satisfacao real, % satisfacao prevista pelo ML, tempo medio
+- **Insights**: tempo medio de usuarios satisfeitos vs insatisfeitos
+- **Grafico**: comparativo de satisfacao real vs prevista pelo modelo
 
 ---
 
-## 🌐 Simulação de Sensores (Wokwi/ESP32)
+## Endpoint da API
 
-A simulação do hardware é feita via Wokwi, utilizando o código `sketch.ino`.
+### `POST /api/dados_sensor`
 
-### 1. Bibliotecas (Inclusas no Wokwi)
+| Campo | Tipo | Descricao |
+|---|---|---|
+| `valor_sensor` | number | `1` = sensor detectou presenca, `0` = sem presenca |
+| `satisfacao` | number | `1` = satisfeito (botao pressionado), `0` = insatisfeito |
+| `tempo_duracao` | number | Duracao da sessao em segundos |
 
-O código `sketch.ino` utiliza as seguintes bibliotecas do ESP32:
+**Respostas:**
 
-- `WiFi`
+| Codigo | Significado |
+|---|---|
+| `200` | Dados salvos com sucesso |
+| `400` | Campos faltando, tipo invalido ou formato nao suportado |
+| `500` | Falha ao salvar no banco |
 
-- `HTTPClient`
+---
 
-- `WiFiClientSecure`
+## Modelo de Machine Learning
 
-### 2. Lógica de Envio
+- **Algoritmo**: Decision Tree (Arvore de Decisao) - `sklearn.tree.DecisionTreeClassifier`
+- **Feature**: `tempo_duracao` (tempo da sessao)
+- **Target**: `satisfacao` (0 ou 1)
+- **Filtro**: so usa sessoes onde `valor_sensor == 1` e `tempo_duracao > 10` (evita ativacoes acidentais)
+- **Split**: 70% treino / 30% teste
+- **Saida**: coluna `satisfacao_prevista` adicionada ao DataFrame
 
-O `sketch.ino` envia os dados via `POST` para o endpoint da API:
+---
 
-- **Endpoint:** `https://<SEU_TUNNEL_URL>/api/dados_sensor`
+## Conexao Wokwi -> API
 
-- **Método:** `POST`
+O ESP32 no Wokwi envia POST para a API. Para funcionar:
 
-- **Corpo da Requisição (JSON ):**
+1. A API precisa estar rodando (`python3 api.py`)
+2. Se o Wokwi estiver em nuvem, use um tunnel (ngrok, localtunnel, etc.) para expor a porta 5000
+3. No `sketch.ino`, configure o endpoint: `http://<SEU_IP_OU_TUNNEL>:5000/api/dados_sensor`
 
-   ```json
-   {
-       "valor_sensor": 1,
-       "satisfacao": <0 ou 1>,
-       "tempo_duracao": <segundos>
-   }
-   ```
+O payload que o ESP32 deve enviar:
+```json
+{
+    "valor_sensor": 1,
+    "satisfacao": 0,
+    "tempo_duracao": 32
+}
+```
 
-- **Observação:** O `sketch.ino` utiliza `client.setInsecure()` para simplificar a conexão HTTPS em ambientes de simulação como o Wokwi.
+---
 
+## Tecnologias
+
+| Camada | Tecnologia |
+|---|---|
+| Hardware | ESP32 / Wokwi |
+| API | Flask |
+| Banco | Oracle Database |
+| ML | scikit-learn (Decision Tree) |
+| Dashboard | Streamlit + Plotly |
+| Linguagem | Python 3.10 |

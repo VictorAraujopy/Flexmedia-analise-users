@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
-import db_config 
+import db_config
+import chatbot
 
 app = Flask(__name__)
 
@@ -33,6 +34,53 @@ def receber_dados_sensor():
         return jsonify({"erro": "Falha ao salvar no banco"}), 500
 
     return jsonify({"mensagem": "Dados salvos com sucesso"}), 200
+
+
+@app.route('/api/interacao', methods=['POST'])
+def receber_interacao():
+    if not request.is_json:
+        return jsonify({"erro": "Envie JSON"}), 400
+
+    dados = request.json
+    texto = dados.get("texto", "").strip()
+    tipo = dados.get("tipo", "texto")
+
+    if not texto:
+        return jsonify({"erro": "Campo 'texto' obrigatório"}), 400
+
+    resposta, categoria = chatbot.processar(texto)
+
+    interacao = {
+        "tipo_interacao": tipo,
+        "conteudo": texto,
+        "resposta_sistema": resposta,
+        "categoria": categoria
+    }
+
+    if not db_config.salvar_interacao(interacao):
+        return jsonify({"erro": "Falha ao salvar no banco"}), 500
+
+    print(f"\n[API] Interação recebida: '{texto}' → '{categoria}'")
+
+    return jsonify({"resposta": resposta, "categoria": categoria}), 200
+
+
+@app.route('/api/recomendacao', methods=['GET'])
+def get_recomendacao():
+    perfil = request.args.get("perfil", "padrao")
+
+    recomendacoes = {
+        "longa": "Que tal visitar a ala de tecnologia? Visitantes com perfil similar adoraram!",
+        "curta": "Confira nosso mapa interativo para aproveitar melhor o tempo aqui.",
+        "util":  "Você parece saber o que quer. Posso te indicar a área de informações rápidas.",
+        "padrao": "Bem-vindo! Explore as opções no menu ou digite sua dúvida."
+    }
+
+    resposta = recomendacoes.get(perfil, recomendacoes["padrao"])
+
+    print(f"\n[API] Recomendação solicitada para perfil: '{perfil}'")
+
+    return jsonify({"recomendacao": resposta, "perfil": perfil}), 200
 
 
 

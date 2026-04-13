@@ -60,14 +60,15 @@ def salvar_interacao(dados):
         return False
 
     sql = """
-        INSERT INTO logs_interacoes (tipo_interacao, conteudo, resposta_sistema, timestamp)
-        VALUES (:1, :2, :3, SYSTIMESTAMP)
+        INSERT INTO logs_interacoes (tipo_interacao, conteudo, resposta_sistema, categoria, timestamp)
+        VALUES (:1, :2, :3, :4, SYSTIMESTAMP)
     """
 
     dados_para_banco = (
         dados.get('tipo_interacao', 'texto'),
         dados.get('conteudo', ''),
         dados.get('resposta_sistema', ''),
+        dados.get('categoria', 'desconhecido'),
     )
 
     try:

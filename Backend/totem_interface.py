@@ -36,6 +36,9 @@ section[data-testid="stSidebar"] {
 </style>
 """, unsafe_allow_html=True)
 
+if "historico" not in st.session_state:
+    st.session_state.historico = []
+
 with st.sidebar:
     st.markdown("## 🤖 Smart-Guide")
     st.caption("Totem Inteligente")
@@ -56,9 +59,6 @@ with st.sidebar:
             st.session_state.historico.append({"autor": "Visitante", "texto": texto})
             st.session_state.historico.append({"autor": "Smart-Guide", "texto": resposta})
             st.rerun()
-
-if "historico" not in st.session_state:
-    st.session_state.historico = []
 
 st.markdown("### Histórico de conversa")
 

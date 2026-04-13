@@ -2,7 +2,7 @@ import oracledb
 import os
 from dotenv import load_dotenv
 import pandas as pd
-load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
+load_dotenv(os.path.join(os.path.dirname(__file__), '../.env'))
 
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
@@ -32,8 +32,8 @@ def salvar_log_sensor(dados):
         return
     
     sql = """ 
-        INSERT INTO logs_sensores (valor_sensor, satisfacao, tempo_duracao)
-        VALUES (:1, :2, :3) 
+        INSERT INTO logs_sensores (valor_sensor, satisfacao, tempo_duracao, timestamp)
+        VALUES (:1, :2, :3, SYSTIMESTAMP) 
     """
     
     dados_para_banco = (
@@ -52,6 +52,33 @@ def salvar_log_sensor(dados):
         return True
     except Exception as e:
         print(f"[DB ERRO - INSERT]: {e}")
+        return False
+
+def salvar_interacao(dados):
+    if pool is None:
+        print("[DB ERRO] Pool não inicializado")
+        return False
+
+    sql = """
+        INSERT INTO logs_interacoes (tipo_interacao, conteudo, resposta_sistema, timestamp)
+        VALUES (:1, :2, :3, SYSTIMESTAMP)
+    """
+
+    dados_para_banco = (
+        dados.get('tipo_interacao', 'texto'),
+        dados.get('conteudo', ''),
+        dados.get('resposta_sistema', ''),
+    )
+
+    try:
+        with pool.acquire() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql, dados_para_banco)
+                connection.commit()
+        print(f"[DB INSERT] Interação salva: {dados_para_banco}")
+        return True
+    except Exception as e:
+        print(f"[DB ERRO - INSERT interacao]: {e}")
         return False
 
 def get_dados_sensor():
@@ -73,3 +100,31 @@ def get_dados_sensor():
     except Exception as e:
         print(f"[DB ERRO - SELECT]: {e}")
         return pd.DataFrame(columns=["valor_sensor", "satisfacao", "tempo_duracao"])
+
+def get_interacoes(tipo=None):
+    if pool is None:
+        print("[DB ERRO] Pool não inicializado")
+        return pd.DataFrame(columns=["tipo_interacao", "conteudo", "resposta_sistema", "timestamp"])
+
+    if tipo:
+        sql = "SELECT tipo_interacao, conteudo, resposta_sistema, timestamp FROM logs_interacoes WHERE tipo_interacao = :1 ORDER BY timestamp DESC"
+        params = [tipo]
+    else:
+        sql = "SELECT tipo_interacao, conteudo, resposta_sistema, timestamp FROM logs_interacoes ORDER BY timestamp DESC"
+        params = []
+
+    try:
+        with pool.acquire() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(sql, params)
+                rows = cursor.fetchall()
+        return pd.DataFrame(rows, columns=["tipo_interacao", "conteudo", "resposta_sistema", "timestamp"])
+    except Exception as e:
+        print(f"[DB ERRO - SELECT interacoes]: {e}")
+        return pd.DataFrame(columns=["tipo_interacao", "conteudo", "resposta_sistema", "timestamp"])
+
+if __name__ == "__main__":
+    if init_db_pool():
+        print("Conexão OK! Pode abrir o dash.")
+    else:
+        print("Erro na conexão. Verifica o .env")

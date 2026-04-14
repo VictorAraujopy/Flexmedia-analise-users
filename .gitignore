@@ -3,3 +3,13 @@ venv/
 __pycache__/
 *.pyc
 
+# Modelos treinados
+*.joblib
+
+# Graficos gerados
+Backend/graficos/
+
+# Datasets de imagem
+Backend/fer2013.csv
+Backend/dataset_expressoes/
+

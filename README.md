@@ -199,3 +199,47 @@ O payload que o ESP32 deve enviar:
 | ML | scikit-learn (Decision Tree) |
 | Dashboard | Streamlit + Plotly |
 | Linguagem | Python 3.10 |
+
+---
+
+## Reconhecimento de Voz (voice_input.py)
+
+Modulo de entrada por voz adicionado como alternativa ao teclado no totem.
+
+Para usar:
+
+```python
+from voice_input import capturar_voz, exibir_input_voz
+
+# Captura voz e retorna texto
+texto = capturar_voz()
+
+# Ou exibe botao de voz no Streamlit
+exibir_input_voz()
+```
+
+Dependencia necessaria:
+```bash
+pip install SpeechRecognition
+```
+
+---
+
+## Novidades no Dashboard (dash.py)
+
+### Analise Temporal
+- Grafico de linha com sessoes por hora do dia
+- Heatmap de horarios de pico por dia da semana
+- Evolucao da satisfacao ao longo do tempo
+
+### Metricas de Engajamento
+- Grafico de tipo de interacao (texto/voz/botao)
+- Quantidade por tipo de interacao
+- Ranking das 10 perguntas mais frequentes
+
+---
+
+## Documentacao Adicionada
+
+- `docs/relatorio_analitico.md` - Analise dos graficos e padroes de uso
+- `docs/documentacao_banco.md` - Estrutura das tabelas Oracle e descricao dos campos

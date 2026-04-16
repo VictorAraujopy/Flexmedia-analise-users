@@ -247,4 +247,4 @@ pip install SpeechRecognition
 ---
 
 ## 🎬 Vídeo de Demonstração
-[Assista aqui]([link_do_youtube](https://youtu.be/4k3nnPqvPrE?si=lSlxhlDQr-Hoc7Cr))
+[Assista aqui](https://youtu.be/4k3nnPqvPrE?si=lSlxhlDQr-Hoc7Cr)

@@ -83,11 +83,11 @@ def salvar_interacao(dados):
         return False
 
 def get_dados_sensor():
-    sql = "SELECT valor_sensor, satisfacao, tempo_duracao FROM logs_sensores"
+    sql = "SELECT valor_sensor, satisfacao, tempo_duracao, timestamp FROM logs_sensores"
 
     if pool is None:
         print("[DB ERRO] Pool não inicializado")
-        return pd.DataFrame(columns=["valor_sensor", "satisfacao", "tempo_duracao"])
+        return pd.DataFrame(columns=["valor_sensor", "satisfacao", "tempo_duracao", "timestamp"])
 
     try:
 
@@ -96,11 +96,11 @@ def get_dados_sensor():
                 cursor.execute(sql)
                 rows = cursor.fetchall()
 
-        return pd.DataFrame(rows, columns=["valor_sensor", "satisfacao", "tempo_duracao"])
+        return pd.DataFrame(rows, columns=["valor_sensor", "satisfacao", "tempo_duracao", "timestamp"])
 
     except Exception as e:
         print(f"[DB ERRO - SELECT]: {e}")
-        return pd.DataFrame(columns=["valor_sensor", "satisfacao", "tempo_duracao"])
+        return pd.DataFrame(columns=["valor_sensor", "satisfacao", "tempo_duracao", "timestamp"])
 
 def get_interacoes(tipo=None):
     if pool is None:

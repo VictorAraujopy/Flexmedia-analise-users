@@ -207,11 +207,8 @@ st.markdown("---")
 st.subheader("🎯 Métricas de Engajamento")
 
 try:
-    from db_config import get_connection
-    conn = get_connection()
-    df_interacoes = pd.read_sql(
-        "SELECT tipo_interacao, conteudo, resposta_sistema, timestamp FROM logs_interacoes", conn)
-    conn.close()
+    from db_config import get_interacoes
+    df_interacoes = get_interacoes()
 
     if df_interacoes.empty:
         st.info("ℹ️ Tabela logs_interacoes ainda sem dados. Aguardando a Pessoa 2.")

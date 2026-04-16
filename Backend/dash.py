@@ -148,3 +148,102 @@ fig_barras.update_layout(
     legend=dict(orientation="h", y=-0.2)
 )
 st.plotly_chart(fig_barras, use_container_width=True, config={'displayModeBar': False})
+
+st.markdown("---")
+
+# ====================================================================
+# E. Gráficos temporais
+# ====================================================================
+st.subheader("📈 Análise Temporal")
+
+if "timestamp" in df.columns:
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df["hora"] = df["timestamp"].dt.hour
+    df["dia_semana"] = df["timestamp"].dt.dayofweek
+
+    st.markdown("#### 🕐 Sessões por Hora do Dia")
+    df_por_hora = df.groupby("hora").size().reset_index(name="sessoes")
+    fig_linha = px.line(df_por_hora, x="hora", y="sessoes", markers=True,
+                        labels={"hora": "Hora do Dia", "sessoes": "Número de Sessões"})
+    fig_linha.update_traces(line_color=COR_UTIL, marker=dict(color=COR_UTIL, size=8))
+    fig_linha.update_layout(height=350, paper_bgcolor=COR_FUNDO_CARD,
+                             plot_bgcolor=COR_FUNDO_CARD, font=dict(color="#C9D1D9"),
+                             xaxis=dict(dtick=1, gridcolor="#30363D"),
+                             yaxis=dict(gridcolor="#30363D"))
+    st.plotly_chart(fig_linha, use_container_width=True, config={'displayModeBar': False})
+
+    st.markdown("#### 🔥 Horários de Pico (Heatmap)")
+    dias_nomes = {0:"Seg",1:"Ter",2:"Qua",3:"Qui",4:"Sex",5:"Sáb",6:"Dom"}
+    df["dia_nome"] = df["dia_semana"].map(dias_nomes)
+    df_heatmap = df.groupby(["dia_nome","hora"]).size().reset_index(name="total")
+    fig_heat = px.density_heatmap(df_heatmap, x="hora", y="dia_nome", z="total",
+                                   color_continuous_scale="Blues",
+                                   labels={"hora":"Hora","dia_nome":"Dia","total":"Sessões"})
+    fig_heat.update_layout(height=350, paper_bgcolor=COR_FUNDO_CARD,
+                            plot_bgcolor=COR_FUNDO_CARD, font=dict(color="#C9D1D9"))
+    st.plotly_chart(fig_heat, use_container_width=True, config={'displayModeBar': False})
+
+    st.markdown("#### 😊 Evolução da Satisfação ao Longo do Tempo")
+    df["data"] = df["timestamp"].dt.date
+    df_satisf_tempo = df.groupby("data")["satisfacao"].mean().reset_index()
+    df_satisf_tempo["satisfacao_pct"] = df_satisf_tempo["satisfacao"] * 100
+    fig_satisf = px.line(df_satisf_tempo, x="data", y="satisfacao_pct", markers=True,
+                          labels={"data":"Data","satisfacao_pct":"% Satisfeitos"})
+    fig_satisf.update_traces(line_color="#28B463", marker=dict(color="#28B463", size=8))
+    fig_satisf.update_layout(height=350, paper_bgcolor=COR_FUNDO_CARD,
+                              plot_bgcolor=COR_FUNDO_CARD, font=dict(color="#C9D1D9"),
+                              xaxis=dict(gridcolor="#30363D"),
+                              yaxis=dict(gridcolor="#30363D", range=[0,100]))
+    st.plotly_chart(fig_satisf, use_container_width=True, config={'displayModeBar': False})
+
+else:
+    st.warning("⚠️ Coluna 'timestamp' não encontrada. Aguardando a Pessoa 1.")
+
+st.markdown("---")
+
+# ====================================================================
+# F. Métricas de engajamento
+# ====================================================================
+st.subheader("🎯 Métricas de Engajamento")
+
+try:
+    from db_config import get_connection
+    conn = get_connection()
+    df_interacoes = pd.read_sql(
+        "SELECT tipo_interacao, conteudo, resposta_sistema, timestamp FROM logs_interacoes", conn)
+    conn.close()
+
+    if df_interacoes.empty:
+        st.info("ℹ️ Tabela logs_interacoes ainda sem dados. Aguardando a Pessoa 2.")
+    else:
+        col_eng1, col_eng2 = st.columns(2)
+
+        with col_eng1:
+            st.markdown("#### 💬 Tipo de Interação")
+            df_tipos = df_interacoes["tipo_interacao"].value_counts().reset_index()
+            df_tipos.columns = ["tipo", "total"]
+            fig_pizza = px.pie(df_tipos, names="tipo", values="total",
+                               color_discrete_sequence=[COR_UTIL, "#28B463", COR_INUTIL])
+            fig_pizza.update_layout(height=350, paper_bgcolor=COR_FUNDO_CARD,
+                                     font=dict(color="#C9D1D9"))
+            st.plotly_chart(fig_pizza, use_container_width=True, config={'displayModeBar': False})
+
+        with col_eng2:
+            st.markdown("#### ⏱️ Quantidade por Tipo de Interação")
+            df_tempo_tipo = df_interacoes.groupby("tipo_interacao").size().reset_index(name="quantidade")
+            fig_tempo = px.bar(df_tempo_tipo, x="tipo_interacao", y="quantidade",
+                               color="tipo_interacao",
+                               color_discrete_sequence=[COR_UTIL, "#28B463", COR_INUTIL],
+                               labels={"tipo_interacao":"Tipo","quantidade":"Quantidade"})
+            fig_tempo.update_layout(height=350, paper_bgcolor=COR_FUNDO_CARD,
+                                     plot_bgcolor=COR_FUNDO_CARD, font=dict(color="#C9D1D9"),
+                                     showlegend=False)
+            st.plotly_chart(fig_tempo, use_container_width=True, config={'displayModeBar': False})
+
+        st.markdown("#### 🏆 Top 10 Perguntas Mais Frequentes")
+        df_perguntas = df_interacoes["conteudo"].value_counts().head(10).reset_index()
+        df_perguntas.columns = ["Pergunta", "Frequência"]
+        st.dataframe(df_perguntas, use_container_width=True, hide_index=True)
+
+except Exception as e:
+    st.warning(f"⚠️ Seção de engajamento indisponível: aguardando tabela logs_interacoes (Pessoa 2). Detalhe: {e}")

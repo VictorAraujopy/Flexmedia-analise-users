@@ -243,3 +243,8 @@ pip install SpeechRecognition
 
 - `docs/relatorio_analitico.md` - Analise dos graficos e padroes de uso
 - `docs/documentacao_banco.md` - Estrutura das tabelas Oracle e descricao dos campos
+
+---
+
+## 🎬 Vídeo de Demonstração
+[Assista aqui]([link_do_youtube](https://youtu.be/4k3nnPqvPrE?si=lSlxhlDQr-Hoc7Cr))

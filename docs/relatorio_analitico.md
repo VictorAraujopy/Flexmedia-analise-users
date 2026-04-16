@@ -23,4 +23,6 @@ de uso.
 - A interação por texto é a mais utilizada
 
 ## 5. Prints do Dashboard
-*(Adicione aqui prints dos gráficos gerados pelo dash.py)*
+![KPIs, Insights e Satisfação Real vs Prevista pelo Modelo](grafico1.png)
+![Análise Temporal - Sessões por Hora, Heatmap de Pico e Evolução da Satisfação](grafico2.png)
+![Métricas de Engajamento - Tipo de Interação e Top 10 Perguntas](grafico3.png)

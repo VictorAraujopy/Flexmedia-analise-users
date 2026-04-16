@@ -1,12 +1,8 @@
 import speech_recognition as sr
 import streamlit as st
 
-
 def capturar_voz():
-    """
-    Captura áudio do microfone e converte em texto.
-    Retorna o texto falado pelo usuário.
-    """
+
     r = sr.Recognizer()
 
     try:
@@ -33,10 +29,7 @@ def capturar_voz():
 
 
 def exibir_input_voz():
-    """
-    Exibe o botão de voz no Streamlit.
-    Pode ser usado no totem_interface.py como alternativa ao teclado.
-    """
+
     st.markdown("### 🎤 Entrada por Voz")
 
     if st.button("🎙️ Clique para falar"):
